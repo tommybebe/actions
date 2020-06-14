@@ -13,9 +13,14 @@ def now():
 
 def get_data(uuid=''):
     endpoint = 'http://api.pathofexile.com/public-stash-tabs'
-    res = req.get(f'{endpoint}?id={uuid}').json()
-    _next_id = res['next_change_id']
-    _stashes = res['stashes']
+    res = req.get(f'{endpoint}?id={uuid}')
+    try:
+        res_json = res.json()
+        _next_id = res_json['next_change_id']
+        _stashes = res_json['stashes']
+    except Exception:
+        print(res.status_code)
+        print(res.text)
     return _next_id, _stashes
 
 
