@@ -1,7 +1,7 @@
 import datetime
-from poe.get_current_id import get_next_change_id
-from poe.get_stash import get_stashes
-from poe.set_data import Setter, get_list
+from get_current_id import get_next_change_id
+from get_stash import get_stashes
+from set_data import Setter, get_list
 
 if __name__ == "__main__":
     initial_id = get_next_change_id()
