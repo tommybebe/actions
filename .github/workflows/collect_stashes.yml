@@ -21,8 +21,8 @@ jobs:
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Run main.py
-      run: |
-        python poe/main.py
+      run: python main.py
+      working-directory: ./poe
       env:
         GCP_KEY: ${{ secrets.GCP_KEY }}
         GCP_BUCKET: ${{ secrets.GCP_BUCKET }}
