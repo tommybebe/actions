@@ -72,4 +72,10 @@ def get_stashes(initial_id, timeout=5):
     timeout_start = time.time()
 
     while time.time() < timeout_start + timeout:
-        next_id = _execute(next_id)
+        _next_id = None
+        try:
+            _next_id = _execute(next_id)
+        except Exception:
+            print(f'request failed at {next_id}')
+            time.sleep(3)
+        next_id = _next_id or next_id
