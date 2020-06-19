@@ -3,6 +3,8 @@ import json
 import datetime
 from os import listdir
 from os.path import isfile, join
+from pathlib import Path
+
 from google.cloud import bigquery
 from google.oauth2 import service_account
 from google.cloud import storage
@@ -17,6 +19,7 @@ def get_list():
     Returns:
         array of json file names
     """
+    Path(TEMP_FILE_DIR).mkdir(parents=True, exist_ok=True)
     json_list = [f for f in listdir(TEMP_FILE_DIR) if isfile(join(TEMP_FILE_DIR, f))]
     return json_list
 

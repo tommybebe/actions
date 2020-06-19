@@ -5,12 +5,13 @@ from set_data import Setter, get_list
 
 if __name__ == "__main__":
     initial_id = get_next_change_id()
-    get_stashes(initial_id, 60*10)
+    get_stashes(initial_id, 60*5)
     setter = Setter()
-
-    for item in get_list():
+    items = get_list()
+    for item in items:
         setter.to_gcs(item)
+    if len(items) > 0:
+        setter.to_bigquery()
 
-    setter.to_bigquery()
     setter.clear()
     print(initial_id, ' / ', datetime.datetime.now(), '/ done')
