@@ -57,7 +57,8 @@ def _execute(_next_id):
     _next_id, stashes = get_data(_next_id)
     data = list(filter(lambda x: x['league'] in ('Delirium', 'Harvest') and x['public'] is True, stashes))
     data = list(map(prep, data))
-    save_to_local(_next_id, data)
+    if len(data) > 0:
+        save_to_local(_next_id, data)
     return _next_id
 
 
@@ -70,12 +71,15 @@ def get_stashes(initial_id, timeout=5):
     """
     next_id = initial_id
     timeout_start = time.time()
-
+    success_delay = 1
+    fail_delay = 3
     while time.time() < timeout_start + timeout:
         _next_id = None
         try:
             _next_id = _execute(next_id)
+            time.sleep(success_delay)
         except Exception:
             print(f'request failed at {next_id}')
-            time.sleep(3)
+            time.sleep(fail_delay)
+            fail_delay += 1
         next_id = _next_id or next_id

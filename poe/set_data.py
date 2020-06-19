@@ -1,5 +1,6 @@
 import os
 import json
+import datetime
 from os import listdir
 from os.path import isfile, join
 from google.cloud import bigquery
@@ -36,6 +37,8 @@ class Setter:
         credentials = get_gcp_credentials()
         self.bq = bigquery.Client(project=os.environ['GCP_PROJECT_ID'], credentials=credentials)
         self.gcs = storage.Client(project=os.environ['GCP_PROJECT_ID'], credentials=credentials)
+        self.current_date = datetime.datetime.now().strftime('%Y%m%d')
+        self.dataset_id = 'poe'
 
     def to_gcs(self, file_name):
         """upload files to GCS
@@ -43,20 +46,33 @@ class Setter:
             temp folder's file name
         Returns:
         """
-        blob_name = 'poe/' + file_name
+        blob_name = f'poe/{self.current_date}/' + file_name
         bucket = self.gcs.bucket(os.environ['GCS_BUCKET'])
         blob = bucket.blob(blob_name)
         blob.upload_from_filename(f'{TEMP_FILE_DIR}/{file_name}')
+
+    def clear(self):
+        """Clear GCS folders if date < yesterday
+        Args:
+        Returns:
+        """
+        bucket = self.gcs.bucket(os.environ['GCS_BUCKET'])
+        blobs = bucket.list_blobs(prefix=self.dataset_id)
+        current_date_file_prefix = f'{self.dataset_id}/{self.current_date}'
+        for blob in blobs:
+            if blob.name[:len(current_date_file_prefix)] != current_date_file_prefix \
+                    and blob.name != f'{self.dataset_id}/':
+                blob.delete()
+        return True
 
     def to_bigquery(self):
         """GCS => Bigquery
         Args:
         Returns:
         """
-        dataset_id = 'poe'
-        table_id = 'stashes'
+        table_id = f'stashes_{self.current_date}'
 
-        dataset = self.bq.create_dataset(dataset_id, exists_ok=True)
+        dataset = self.bq.create_dataset(self.dataset_id, exists_ok=True)
         table = bigquery.Table(dataset.table(table_id))
         config = bigquery.LoadJobConfig()
 
@@ -105,7 +121,7 @@ class Setter:
 
         config.external_data_configuration = config
         job = self.bq.load_table_from_uri(
-            f"gs://{os.environ['GCS_BUCKET']}/poe/*",
+            f"gs://{os.environ['GCS_BUCKET']}/poe/{self.current_date}/*",
             table,
             job_config=config
         )
