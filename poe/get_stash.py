@@ -57,8 +57,7 @@ def _execute(_next_id):
     _next_id, stashes = get_data(_next_id)
     data = list(filter(lambda x: x['league'] in ('Delirium', 'Harvest') and x['public'] is True, stashes))
     data = list(map(prep, data))
-    if len(data) > 0:
-        save_to_local(_next_id, data)
+    save_to_local(_next_id, data)
     return _next_id
 
 
