@@ -84,6 +84,7 @@ class Setter:
         # config.autodetect = True
         config.schema = [
             bigquery.SchemaField('id', 'STRING'),
+            bigquery.SchemaField('ts', 'timestamp'),
             bigquery.SchemaField('accountName', 'STRING'),
             bigquery.SchemaField('lastCharacterName', 'STRING'),
             bigquery.SchemaField('stash', 'STRING'),

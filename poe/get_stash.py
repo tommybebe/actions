@@ -7,7 +7,7 @@ from pathlib import Path
 
 def now():
     _now = datetime.datetime.now()
-    _now = _now.strftime('%Y%m%d_%H%M%S')
+    _now = _now.strftime('%Y-%m-%d %H:%M:%S')
     return _now
 
 
@@ -25,7 +25,9 @@ def get_data(uuid=''):
 
 
 def prep(d):
+    _now = now()
     if 'items' in d:
+        d['ts'] = _now
         for i, item in enumerate(d['items']):
             if 'properties' in item:
                 for j, prop in enumerate(item['properties']):
@@ -41,7 +43,7 @@ def prep(d):
 
 def save_to_local(uuid, data):
     Path("./temp").mkdir(parents=True, exist_ok=True)
-    with open(f'./temp/{now()}_{uuid}.jsonl', 'w') as outfile:
+    with open(f'./temp/{uuid}.jsonl', 'w') as outfile:
         for entry in data:
             json.dump(entry, outfile)
             outfile.write('\n')
