@@ -7,6 +7,6 @@ def get_next_change_id():
     Returns:
         string, next stash id
     """
-    url = 'https://poe.ninja/api/Data/GetStats'
+    url = "https://poe.ninja/api/Data/GetStats"
     res = req.get(url).json()
-    return res['next_change_id']
+    return res["next_change_id"]
