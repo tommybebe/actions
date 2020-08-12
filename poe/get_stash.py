@@ -7,17 +7,17 @@ from pathlib import Path
 
 def now():
     _now = datetime.datetime.now()
-    _now = _now.strftime('%Y-%m-%d %H:%M:%S')
+    _now = _now.strftime("%Y-%m-%d %H:%M:%S")
     return _now
 
 
-def get_data(uuid=''):
-    endpoint = 'http://api.pathofexile.com/public-stash-tabs'
-    res = req.get(f'{endpoint}?id={uuid}')
+def get_data(uuid=""):
+    endpoint = "http://api.pathofexile.com/public-stash-tabs"
+    res = req.get(f"{endpoint}?id={uuid}")
     try:
         res_json = res.json()
-        _next_id = res_json['next_change_id']
-        _stashes = res_json['stashes']
+        _next_id = res_json["next_change_id"]
+        _stashes = res_json["stashes"]
     except Exception:
         print(res.status_code)
         print(res.text)
@@ -26,27 +26,31 @@ def get_data(uuid=''):
 
 def prep(d):
     _now = now()
-    if 'items' in d:
-        d['ts'] = _now
-        for i, item in enumerate(d['items']):
-            if 'properties' in item:
-                for j, prop in enumerate(item['properties']):
-                    if type(d['items'][i]['properties'][j]['values']) == list:
-                        if len(d['items'][i]['properties'][j]['values']) == 0:
-                            d['items'][i]['properties'][j]['values'] = None
-                        elif type(d['items'][i]['properties'][j]['values'][0])==list:
-                            d['items'][i]['properties'][j]['values'] = d['items'][i]['properties'][j]['values'][0][0]
+    if "items" in d:
+        d["ts"] = _now
+        for i, item in enumerate(d["items"]):
+            if "properties" in item:
+                for j, prop in enumerate(item["properties"]):
+                    if type(d["items"][i]["properties"][j]["values"]) == list:
+                        if len(d["items"][i]["properties"][j]["values"]) == 0:
+                            d["items"][i]["properties"][j]["values"] = None
+                        elif type(d["items"][i]["properties"][j]["values"][0]) == list:
+                            d["items"][i]["properties"][j]["values"] = d["items"][i][
+                                "properties"
+                            ][j]["values"][0][0]
                         else:
-                            d['items'][i]['properties'][j]['values'] = d['items'][i]['properties'][j]['values'][0]
+                            d["items"][i]["properties"][j]["values"] = d["items"][i][
+                                "properties"
+                            ][j]["values"][0]
     return d
 
 
 def save_to_local(uuid, data):
     Path("./temp").mkdir(parents=True, exist_ok=True)
-    with open(f'./temp/{uuid}.jsonl', 'w') as outfile:
+    with open(f"./temp/{uuid}.jsonl", "w") as outfile:
         for entry in data:
             json.dump(entry, outfile)
-            outfile.write('\n')
+            outfile.write("\n")
 
 
 def _execute(_next_id):
@@ -57,7 +61,12 @@ def _execute(_next_id):
         _next_id's next id
     """
     _next_id, stashes = get_data(_next_id)
-    data = list(filter(lambda x: x['league'] in ('Delirium', 'Harvest') and x['public'] is True, stashes))
+    data = list(
+        filter(
+            lambda x: x["league"] in ("Delirium", "Harvest") and x["public"] is True,
+            stashes,
+        )
+    )
     data = list(map(prep, data))
     if len(data) > 0:
         save_to_local(_next_id, data)
@@ -81,7 +90,7 @@ def get_stashes(initial_id, timeout=5):
             _next_id = _execute(next_id)
             time.sleep(success_delay)
         except Exception:
-            print(f'request failed at {next_id}')
+            print(f"request failed at {next_id}")
             time.sleep(fail_delay)
             fail_delay += 1
         next_id = _next_id or next_id
