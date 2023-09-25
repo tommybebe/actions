@@ -11,6 +11,9 @@ jobs:
   my_job:
     runs-on: ubuntu-latest
     steps:
+      - name: ls 
+        run: |
+          ls
       - name: Mirror Directory Structure
         uses: adityak74/google-drive-upload-git-action@main
         with:
