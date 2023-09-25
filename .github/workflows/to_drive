@@ -1,0 +1,21 @@
+name: to_drive
+
+on: 
+  workflow_dispatch:
+    inputs:
+      path:
+        required: true
+        default: 'poe'
+
+jobs:
+  my_job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mirror Directory Structure
+        uses: adityak74/google-drive-upload-git-action@main
+        with:
+          filename: ${{ github.event.inputs.path }}          
+          credentials: ${{ secrets.CREDENTIALS }}
+          folderId: ${{ secrets.DRIVE_ID }}
+          overwrite: "true"
+          mirrorDirectoryStructure: "true"
