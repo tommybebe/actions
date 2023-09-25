@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: ls 
         run: |
-          ls
+          ls -lha
       - name: Mirror Directory Structure
         uses: adityak74/google-drive-upload-git-action@main
         with:
